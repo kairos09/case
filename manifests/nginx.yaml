@@ -6,7 +6,7 @@ metadata:
   labels: 
     app: nginx
 spec:
-  replicas: 2 #min\max available
+  replicas: 1 #min\max available
   selector:
     matchLabels:
       app: nginx
@@ -20,6 +20,7 @@ spec:
       labels:
         app: nginx
     spec:
+      serviceAccountName: nginx-user
       containers:
       - name: nginx
         image: nginx:latest
