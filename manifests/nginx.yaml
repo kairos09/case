@@ -6,7 +6,7 @@ metadata:
   labels: 
     app: nginx
 spec:
-  replicas: 1 #min\max available
+  replicas: 2 #min\max available
   selector:
     matchLabels:
       app: nginx
@@ -20,7 +20,6 @@ spec:
       labels:
         app: nginx
     spec:
-      serviceAccount: nginx-user
       containers:
       - name: nginx
         image: nginx:latest
@@ -33,16 +32,28 @@ spec:
             memory: "256Mi"
         ports:
         - containerPort: 80
-      readinessProbe:
+        volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+        readinessProbe:
           httpGet:
             path: /
             port: 80
           initialDelaySeconds: 5
           periodSeconds: 10
-      livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 20
+        livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+          items:
+            - key: nginx.conf
+              path: nginx.conf
 
